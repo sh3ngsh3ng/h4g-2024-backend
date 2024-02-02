@@ -1,7 +1,7 @@
 import cors from "cors";
 import express from "express";
 import fs from "fs";
-import authMiddleware from "./middleware/auth-middleware";
+import { authMiddleware } from "./middleware/auth-middleware";
 const mongoose = require("mongoose");
 
 

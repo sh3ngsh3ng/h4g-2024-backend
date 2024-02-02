@@ -6,7 +6,16 @@ const { ObjectId } = mongoose.Schema;
 
 const userSchema = new Schema(
   {
-    name: {
+    uid: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    firstName: {
+      type: String,
+      trim: true,
+    },
+    lastName: {
       type: String,
       trim: true,
     },
@@ -16,7 +25,17 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
-    uid: {
+    age: {
+      type: Number,
+      max: 100,
+      min: 1,
+    },
+    skills: [{ type: String }],
+    interest: [{ type: String }],
+    phoneNumber: {
+      type: String,
+    },
+    emergencyContact: {
       type: String,
       required: true,
     }
@@ -24,4 +43,4 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("User", userSchema)
+export default mongoose.model("User", userSchema);

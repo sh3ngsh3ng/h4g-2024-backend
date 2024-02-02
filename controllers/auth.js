@@ -3,14 +3,17 @@ import User from "../models/User";
 
 export const register = async (req, res) => {
   try {
-    const { name, email, uid } = req.body;
+    const { firstName, lastName, age, gender, phoneNumber, emergencyContact } = req.body;
+    const { email, uid } = req.user;
+
+    console.log(email);
   
     const userFound = await User.findOne({uid});
   
     if (userFound) {
       return res.status(400).send("User already exist");
     } else {
-      const newUser = new User( { name, email, uid });
+      const newUser = new User( { firstName, lastName, age, gender, phoneNumber, emergencyContact, email, uid });
   
       await newUser.save();
   
