@@ -1,28 +1,46 @@
 import { adminApp } from "../firebase";
 
-function authMiddleware(request, response, next) {
-  const headerToken = request.headers.authorization;
+export const authMiddleware = (req, res, next) => {
+  const headerToken = req.headers.authorization;
   if (!headerToken) {
-    return response.send({ message: "No token provided" }).status(401);
+    return res.send({ message: "No token provided" }).status(401);
   }
 
   if (headerToken && headerToken.split(" ")[0] !== "Bearer") {
-    response.send({ message: "Invalid token" }).status(401);
+    res.send({ message: "Invalid token" }).status(401);
   }
 
   const token = headerToken.split(" ")[1];
-  console.log(token);
   adminApp
     .auth()
     .verifyIdToken(token)
     .then((decodedToken) => {
       const uid = decodedToken.uid;
-      console.log(decodedToken.email);
-      console.log("Below is uid");
-      console.log(uid);
+      req.user = uid;
     })
     .then(() => next())
-    .catch((err) => response.send({ message: err }).status(403));
-}
+    .catch((err) => res.send({ message: err }).status(403));
+};
 
-export default authMiddleware;
+export const registerMiddleware = (req, res, next) => {
+  const headerToken = req.headers.authorization;
+  if (!headerToken) {
+    return res.send({ message: "No token provided" }).status(401);
+  }
+
+  if (headerToken && headerToken.split(" ")[0] !== "Bearer") {
+    res.send({ message: "Invalid token" }).status(401);
+  }
+
+  const token = headerToken.split(" ")[1];
+  adminApp
+    .auth()
+    .verifyIdToken(token)
+    .then((decodedToken) => {
+      const uid = decodedToken.uid;
+      const email = decodedToken.email;
+      req.user = { uid, email };
+    })
+    .then(() => next())
+    .catch((err) => res.send({ message: err }).status(403));
+};
