@@ -28,8 +28,11 @@ mongoose
 fs.readdirSync("./routes").map((r) =>
   app.use("/api", require(`./routes/${r}`))
 );
+
+
 app.get("/test", authMiddleware, (req, res) => {
   res.send("Hello world from node js");
+  User.find(req.uid)
 });
 
 const port = 8000;

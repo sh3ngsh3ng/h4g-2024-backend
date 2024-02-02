@@ -20,9 +20,13 @@ function authMiddleware(request, response, next) {
       console.log(decodedToken.email);
       console.log("Below is uid");
       console.log(uid);
+      request.user = uid;
     })
     .then(() => next())
     .catch((err) => response.send({ message: err }).status(403));
 }
+
+
+
 
 export default authMiddleware;
