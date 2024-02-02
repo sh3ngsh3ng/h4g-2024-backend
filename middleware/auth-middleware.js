@@ -11,7 +11,6 @@ export const authMiddleware = (req, res, next) => {
   }
 
   const token = headerToken.split(" ")[1];
-  console.log(token);
   adminApp
     .auth()
     .verifyIdToken(token)
@@ -34,7 +33,6 @@ export const registerMiddleware = (req, res, next) => {
   }
 
   const token = headerToken.split(" ")[1];
-  console.log(token);
   adminApp
     .auth()
     .verifyIdToken(token)
