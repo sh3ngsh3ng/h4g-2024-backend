@@ -1,10 +1,10 @@
 import express from "express";
 import { register, login } from "../controllers/auth";
-import { registerMiddleware } from "../middleware/auth-middleware";
+import { authMiddleware, registerMiddleware } from "../middleware/auth-middleware";
 
 const router = express.Router();
 
 router.post("/register", registerMiddleware, register);
-router.post("/login", login);
+router.post("/login", authMiddleware, login);
 
 module.exports = router;

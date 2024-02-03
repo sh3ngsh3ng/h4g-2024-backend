@@ -1,4 +1,5 @@
 import { adminApp } from "../firebase";
+import User from "../models/User";
 
 export const authMiddleware = (req, res, next) => {
   const headerToken = req.headers.authorization;
@@ -16,6 +17,11 @@ export const authMiddleware = (req, res, next) => {
     .verifyIdToken(token)
     .then((decodedToken) => {
       const uid = decodedToken.uid;
+
+      if (User.exists({uid})) {
+        return res.send({message: "Account is not created. Please proceed to create account."}.status(401));
+      }
+
       req.user = uid;
     })
     .then(() => next())
