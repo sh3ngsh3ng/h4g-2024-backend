@@ -1,12 +1,9 @@
 import User from "../models/User";
 
-
 export const register = async (req, res) => {
   try {
     const { firstName, lastName, age, gender, phoneNumber, emergencyContact } = req.body;
     const { email, uid } = req.user;
-
-    console.log(email);
   
     const userFound = await User.findOne({uid});
   
@@ -17,7 +14,7 @@ export const register = async (req, res) => {
   
       await newUser.save();
   
-      return res.json({ user: newUser });
+      return res.json({sucess: true});
     }
   } catch (err) {
     return res.status(400).send(err);
@@ -25,6 +22,12 @@ export const register = async (req, res) => {
 }
 
 export const login = (req, res) => {
-  console.log(req.body);
-  res.send('login user response from controller')
+  try {
+    // return res.json({sucess: true});
+    if (req.user) {
+      return res.json({sucess: true});
+    }
+  } catch {
+    return res.status(401).send("User not found");
+  }
 }
