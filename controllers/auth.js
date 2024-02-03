@@ -5,8 +5,6 @@ export const register = async (req, res) => {
   try {
     const { firstName, lastName, age, gender, phoneNumber, emergencyContact } = req.body;
     const { email, uid } = req.user;
-
-    console.log(email);
   
     const userFound = await User.findOne({uid});
   
@@ -17,7 +15,7 @@ export const register = async (req, res) => {
   
       await newUser.save();
   
-      return res.json({ user: newUser });
+      return res.json(uid);
     }
   } catch (err) {
     return res.status(400).send(err);
