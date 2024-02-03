@@ -22,5 +22,12 @@ export const register = async (req, res) => {
 }
 
 export const login = (req, res) => {
-  return res.json({sucess: true});
+  try {
+    // return res.json({sucess: true});
+    if (req.user) {
+      return res.json({sucess: true});
+    }
+  } catch {
+    return res.status(401).send("User not found");
+  }
 }
