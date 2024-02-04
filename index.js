@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import fs from "fs";
 import { authMiddleware } from "./middleware/auth-middleware";
+import { generatorFromPdf, generatorFromScratch } from "./controllers/pdf";
 const mongoose = require("mongoose");
 
 
@@ -33,6 +34,9 @@ fs.readdirSync("./routes").map((r) =>
 app.get("/test", authMiddleware, (req, res) => {
   res.send("Hello world from node js");
 });
+
+app.get("/pdf1", generatorFromScratch);
+app.get("/pdf2", generatorFromPdf);
 
 const port = 8000;
 app.listen(port, () => {
