@@ -12,20 +12,22 @@ export const authMiddleware = async (req, res, next) => {
     return res.send({ message: "Invalid token" }).status(401);
   }
 
- 
   const token = headerToken.split(" ")[1];
   await adminApp
     .auth()
     .verifyIdToken(token)
     .then(async (decodedToken) => {
       const uid = decodedToken.uid;
-      const isExist = await User.findOne({uid});
+      const isExist = await User.findOne({ uid });
       if (isExist == null) {
-        return res.send({ message: "Account not found! Please sign up your accound." }).status(401);
+        return res
+          .send({ message: "Account not found! Please sign up your accound." })
+          .status(401);
+      } else {
+        req.user = uid;
       }
-      req.user = uid;
     })
-    .then(() => next())
+    .then(() => next());
 };
 
 export const registerMiddleware = (req, res, next) => {
