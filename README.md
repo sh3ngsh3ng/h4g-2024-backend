@@ -6,7 +6,7 @@
 
 
 ## Starting Local Email SMTP
-- Download the binaries for mailslurper here `https://github.com/mailslurper/mailslurper/wiki`
+- Download the binaries for mailslurper here `https://github.com/mailslurper/mailslurper/releases`
 - Download the 1.14.1 version
 - Extract and run the SMTP application
 - Go to `localhost:8080`
