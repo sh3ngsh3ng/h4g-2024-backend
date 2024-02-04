@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 
 
 require("dotenv").config();
+require("./services/email")
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
@@ -35,8 +36,14 @@ app.get("/test", authMiddleware, (req, res) => {
   res.send("Hello world from node js");
 });
 
+
 app.get("/pdf1", generatorFromScratch);
 app.get("/pdf2", generatorFromPdf);
+
+app.get("/test-email", (req, res) => {
+  console.log("called")
+  res.send("ok")
+})
 
 const port = 8000;
 app.listen(port, () => {

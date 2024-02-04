@@ -37,9 +37,9 @@ export const generatorFromPdf = async (req, res) => {
   try {
     const existingPdf = fs.readFileSync("./certificateTemplate.pdf");
     const pdfDoc = await PDFDocument.load(existingPdf);
-    console.log(pdfDoc)
+
     const page = pdfDoc.getPage(0)
-    console.log(page)
+
     const { width, height } = page.getSize();
 
     const volunteerName = "Mr Lim";
