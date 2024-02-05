@@ -1,11 +1,20 @@
-import Event from "../models/Event";
+import { Event, EventAttendance } from "../models/Event";
 import slugify from "slugify";
+import User from "../models/User";
 
 //to create and add events
 export const createEvent = async (req, res) => {
   console.log("req:", req.body);
   try {
-    const { name, startDate, endDate, description, maxHoursGiven, interest, skills } = req.body;
+    const {
+      name,
+      startDate,
+      endDate,
+      description,
+      maxHoursGiven,
+      interest,
+      skills,
+    } = req.body;
     const eventFound = await Event.findOne({ name });
     console.log("eventFound =>", eventFound);
     if (eventFound !== null) {
@@ -20,6 +29,8 @@ export const createEvent = async (req, res) => {
         lower: true,
       });
 
+      const token = Math.random().toString(36);
+
       const newEvent = {
         name,
         slug,
@@ -29,6 +40,7 @@ export const createEvent = async (req, res) => {
         maxHoursGiven,
         interest,
         skills,
+        token,
       };
       const createdEvent = await Event.create(newEvent);
       console.log("created event ->", createdEvent);
@@ -80,7 +92,15 @@ export const deleteEventBySlug = async (req, res) => {
 
 //to update an event by slug
 export const updateEvent = async (req, res) => {
-  const { name, startDate, endDate, description, maxHoursGiven, interest, skills } = req.body;
+  const {
+    name,
+    startDate,
+    endDate,
+    description,
+    maxHoursGiven,
+    interest,
+    skills,
+  } = req.body;
   const { slug } = req.params;
   //try {
   // check if event exists
@@ -93,7 +113,9 @@ export const updateEvent = async (req, res) => {
     if (repeatedEvent && repeatedEvent.name !== originalEvent.name) {
       return res.status(400).send("Event name is already used");
     } else if (!name || !startDate || !maxHoursGiven) {
-      return res.status(400).send("Name, Start Date and Maximum Hours Given are required Fields");
+      return res
+        .status(400)
+        .send("Name, Start Date and Maximum Hours Given are required Fields");
     } else if (startDate && endDate && startDate > endDate) {
       return res.status(400).send("Start date should be before End date");
     } else {
@@ -130,3 +152,59 @@ export const updateEvent = async (req, res) => {
     return res.status(400).send(err);
   }*/
 };
+
+//to join an event
+export const joinEvent = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    const user = await User.findOne({ uid: req.user });
+    const event = await Event.findOne({ slug });
+
+    console.log(event);
+
+    if (event.volunteers.includes(user.uid)) {
+      return res.status(400).send("Already joined");
+    }
+    event.volunteers.push(user.uid);
+    
+    event.save();
+
+    const userAttendance = await new EventAttendance({
+      event: event,
+      user: user.uid,
+    }).save();
+
+    return res.json({ success: true });
+  } catch (err) {
+    res.status(400).send("Join event failed => " + err);
+  }
+};
+
+export const markAttendance = async (req, res) => {
+  try {
+    const { slug, token } = req.params;
+    console.log(req.params);
+
+    const user = await User.findOne({ uid: req.user });
+    const event = await Event.findOne( { slug });
+
+    if (event.token !== token) {
+      return res.status(400).send("Wrong verification token");
+    }
+
+    const eventAttendance = await EventAttendance.findOne({ uid: user.uid, event });
+
+    if (!eventAttendance) {
+      return res.status(400).send("Find no user record in this event");
+    }
+
+    eventAttendance.isAttend = true;
+
+    eventAttendance.save();
+
+    return res.json({ success: true });
+  } catch (err) {
+    res.status(400).send("Mark Attendance failed => " + err);
+  }
+}
