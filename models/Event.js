@@ -46,4 +46,19 @@ const eventSchema = new Schema(
   { timestamps: true }
 );
 
+const eventAttendanceSchema = new Schema( {
+  user: {
+    type: ObjectId,
+    ref: "User",
+  }, 
+  event: {
+    type: ObjectId,
+    ref: "Event",
+  },
+  isAttend: {
+    type: Boolean,
+    default: false,
+  }
+})
+
 export default mongoose.model("Event", eventSchema);
