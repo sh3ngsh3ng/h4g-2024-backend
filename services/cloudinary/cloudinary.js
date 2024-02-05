@@ -9,15 +9,28 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_SECRET,
 });
 
-cloudinary.uploader
-  .upload(testing, {
-    public_id: "testing",
-    folder: "testingVolunteerWave",
-    resource_type: "image",
-  })
-  .then(() => {
-    console.log("uploaded successfully");
-  })
-  .catch((error) => {
+async function testUploadImage() {
+  try {
+    await cloudinary.uploader.upload(testing, {
+      public_id: "testing",
+      folder: "testingVolunteerWave",
+      resource_type: "image",
+    });
+    console.log("uploaded image successfully");
+  } catch (error) {
     console.log("error", error);
-  });
+  }
+}
+
+testUploadImage();
+
+async function testDeleteImage() {
+  try {
+    await cloudinary.uploader.destroy("testingVolunteerWave/testing");
+    console.log("deleted image successfully");
+  } catch (error) {
+    console.log("error", error);
+  }
+}
+
+testDeleteImage();
