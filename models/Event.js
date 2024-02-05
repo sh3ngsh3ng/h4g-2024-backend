@@ -18,7 +18,6 @@ const eventSchema = new Schema(
     },
     startDate: {
       type: Date,
-      required: true,
     },
     endDate: {
       type: Date,
@@ -36,14 +35,33 @@ const eventSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    /*volunteers: [
+    token: {
+      type: String,
+    },
+    volunteers: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "User",
+        type: String,
       },
-    ],*/
+    ],
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Event", eventSchema);
+const eventAttendanceSchema = new Schema( {
+  user: {
+    type: String,
+    required: true,
+  }, 
+  event: {
+    type: ObjectId,
+    ref: "Event",
+    required: true,
+  },
+  isAttend: {
+    type: Boolean,
+    default: false,
+  }
+})
+
+export const Event = mongoose.model("Event", eventSchema);
+export const EventAttendance = mongoose.model("EventAttendance", eventAttendanceSchema);

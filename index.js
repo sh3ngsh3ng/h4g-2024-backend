@@ -3,6 +3,7 @@ import express from "express";
 import fs from "fs";
 import { authMiddleware } from "./middleware/auth-middleware";
 import { generatorFromPdf, generatorFromScratch } from "./controllers/pdf";
+
 const mongoose = require("mongoose");
 
 require("dotenv").config();
@@ -43,6 +44,7 @@ app.get("/test-cloudinary", (req, res) => {
   console.log("called");
   res.send("ok");
 });
+
 
 const port = 8000;
 app.listen(port, () => {
