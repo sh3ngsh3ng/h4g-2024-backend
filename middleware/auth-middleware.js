@@ -5,7 +5,9 @@ export const authMiddleware = async (req, res, next) => {
   const headerToken = req.headers.authorization;
 
   if (!headerToken) {
-    return res.send({ message: "No token provided" }).status(401);
+    // return res.send({ message: "No token provided" }).status(401);
+    console.log("Here");
+    return res.redirect("http://localhost:3000/signup");
   }
 
   if (headerToken && headerToken.split(" ")[0] !== "Bearer") {

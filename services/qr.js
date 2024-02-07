@@ -3,7 +3,7 @@ const fs = require("fs");
 
 export const generateQrCode = async (req, res) => {
   try {
-    const url = "http://localhost:3000/user/token"
+    const url = `http://localhost:3000/signup?event=${slug}&token=${token}`
     
     // generate qrcode
     const qr_png = qr.image(url, { type: "png" });
