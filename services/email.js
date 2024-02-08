@@ -30,7 +30,7 @@ async function testEmail() {
 }
 
 // Call the testEmail function
-testEmail();
+//testEmail();
 
 async function sendReminderEmail() {
   let data = {
@@ -48,4 +48,4 @@ async function sendReminderEmail() {
   });
 }
 
-sendReminderEmail();
+//sendReminderEmail();

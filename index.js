@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 
 require("dotenv").config();
 require("./services/email");
-require("./services/cloudinary/cloudinary");
+require("./services/cloudinary");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
@@ -44,7 +44,6 @@ app.get("/test-cloudinary", (req, res) => {
   console.log("called");
   res.send("ok");
 });
-
 
 const port = 8000;
 app.listen(port, () => {
