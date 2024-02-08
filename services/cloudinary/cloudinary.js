@@ -23,6 +23,20 @@ async function testUploadImage() {
   }
 }
 
+export const uploadImage = async (image, name) => {
+  try {
+    const output = await cloudinary.uploader.upload(image, {
+      // public_id: {name},
+      folder: "testingVolunteerWave/images",
+      resource_type: "image",
+    });
+    console.log(output);
+    return output;
+  } catch (error) {
+    console.log("error", error);
+  }
+}
+
 testUploadImage();
 
 async function testDeleteImage() {
