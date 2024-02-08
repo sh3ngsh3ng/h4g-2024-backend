@@ -7,8 +7,12 @@ import {
   updateEvent,
   joinEvent,
   markAttendance,
+  listAttendance,
+  adminMarkAttendance,
+  adminUnmarkAttendance,
+  adminGenerateQr,
 } from "../controllers/event";
-import { authMiddleware } from "../middleware/auth-middleware";
+import { authMiddleware, isAdminMiddleware } from "../middleware/auth-middleware";
 
 const router = express.Router();
 
@@ -18,7 +22,11 @@ router.get("/get/:slug", getEventBySlug);
 router.delete("/delete/:slug", deleteEventBySlug);
 router.put("/update/:slug", updateEvent);
 
-router.get("/joinEvent/:slug", authMiddleware, joinEvent)
+router.post("/joinEvent/:slug", authMiddleware, joinEvent)
 router.get("/joinEvent/:slug/markAttendance/:token", authMiddleware, markAttendance)
+router.get("/event/:slug/listAttendance", isAdminMiddleware, listAttendance)
+router.post("/event/:slug/listAttendance/mark", isAdminMiddleware, adminMarkAttendance)
+router.post("/event/:slug/listAttendance/unmark", isAdminMiddleware, adminUnmarkAttendance)
+router.get("/event/:slug/listAttendance/generate", isAdminMiddleware, adminGenerateQr)
 
 module.exports = router;

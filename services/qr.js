@@ -1,7 +1,8 @@
 import qr from "qr-image"
+import { uploadImage } from "./cloudinary/cloudinary";
 const fs = require("fs");
 
-export const generateQrCode = async (req, res) => {
+export const generateQrCode= async (slug, token) => {
   try {
     const url = `http://localhost:3000/signup?event=${slug}&token=${token}`
     
@@ -10,7 +11,9 @@ export const generateQrCode = async (req, res) => {
 
     qr_png.pipe(fs.createWriteStream("qr_code.png"));
 
-    return res.send(qr_png);
+    const output = await uploadImage("qr_code.png", "Testing");
+
+    return output;
   } catch (err) {
     res.status(400).send("Qr code generate error => " + err);
   }
