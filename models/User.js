@@ -38,6 +38,10 @@ const userSchema = new Schema(
     emergencyContact: {
       type: String,
       required: true,
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false,
     }
   },
   { timestamps: true }

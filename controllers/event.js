@@ -1,6 +1,7 @@
 import { Event, EventAttendance } from "../models/Event";
 import slugify from "slugify";
 import User from "../models/User";
+import { generateQrCode } from "../services/qr";
 
 //to create and add events
 export const createEvent = async (req, res) => {
@@ -171,6 +172,10 @@ export const joinEvent = async (req, res) => {
     const userAttendance = await new EventAttendance({
       event: event,
       user: user.uid,
+      name: user.firstName + " " + user.lastName,
+      age: user.age,
+      email: user.email,
+      school: user.school,
     }).save();
 
     return res.json({ success: true });
@@ -182,7 +187,6 @@ export const joinEvent = async (req, res) => {
 export const markAttendance = async (req, res) => {
   try {
     const { slug, token } = req.params;
-    console.log(req.params);
 
     const user = await User.findOne({ uid: req.user });
     const event = await Event.findOne( { slug });
@@ -204,5 +208,90 @@ export const markAttendance = async (req, res) => {
     return res.json({ success: true });
   } catch (err) {
     res.status(400).send("Mark Attendance failed => " + err);
+  }
+}
+
+export const adminMarkAttendance = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { uid } = req.body;
+
+    const user = await User.findOne({ uid });
+    const event = await Event.findOne( { slug });
+
+    const eventAttendance = await EventAttendance.findOne({ uid: user.uid, event });
+
+    if (!eventAttendance) {
+      return res.status(400).send("Find no user record in this event");
+    }
+
+    eventAttendance.isAttend = true;
+
+    eventAttendance.save();
+
+    return res.json({ success: true });
+  } catch (err) {
+    res.status(400).send("Mark Attendance failed => " + err);
+  }
+}
+
+export const adminUnmarkAttendance = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { uid } = req.body;
+
+    const user = await User.findOne({ uid });
+    const event = await Event.findOne( { slug });
+
+    const eventAttendance = await EventAttendance.findOne({ uid: user.uid, event });
+
+    if (!eventAttendance) {
+      return res.status(400).send("Find no user record in this event");
+    }
+
+    eventAttendance.isAttend = false;
+
+    eventAttendance.save();
+
+    return res.json({ success: true });
+  } catch (err) {
+    res.status(400).send("Unmark Attendance failed => " + err);
+  }
+}
+
+export const listAttendance = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    const event = await Event.findOne( { slug });
+
+    const eventAttendance = await EventAttendance.find({ event });
+
+    if (!eventAttendance) {
+      return res.status(400).send("Find no record for this event attendance");
+    }
+
+    console.log(eventAttendance);
+
+    return res.json({attendance: eventAttendance, slug: event.slug, eventName: event.name});
+  } catch (err) {
+    return res.json("List Attendance failed => " + err);
+  }
+}
+
+export const adminGenerateQr = async (req, res) => {
+  try {
+    console.log("Hereh")
+    const { slug } = req.params;
+
+    const event = await Event.findOne( { slug });
+
+    const qr = await generateQrCode(slug, event.token);
+
+    console.log(qr);
+
+    return res.json({qr: qr})
+  } catch (err) {
+    return  res.json("Create QR failed => " + err);
   }
 }
