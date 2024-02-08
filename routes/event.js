@@ -23,7 +23,7 @@ router.delete("/delete/:slug", deleteEventBySlug);
 router.put("/update/:slug", updateEvent);
 
 router.post("/joinEvent/:slug", authMiddleware, joinEvent)
-router.get("/joinEvent/:slug/markAttendance/:token", authMiddleware, markAttendance)
+router.get("/event/:slug/markAttendance/:token", authMiddleware, markAttendance)
 router.get("/event/:slug/listAttendance", isAdminMiddleware, listAttendance)
 router.post("/event/:slug/listAttendance/mark", isAdminMiddleware, adminMarkAttendance)
 router.post("/event/:slug/listAttendance/unmark", isAdminMiddleware, adminUnmarkAttendance)
