@@ -1,20 +1,14 @@
 import { Event, EventAttendance } from "../models/Event";
 import slugify from "slugify";
 import User from "../models/User";
+import EventList from "../events-db.json";
 
 //to create and add events
 export const createEvent = async (req, res) => {
   console.log("req:", req.body);
   try {
-    const {
-      name,
-      startDate,
-      endDate,
-      description,
-      maxHoursGiven,
-      interest,
-      skills,
-    } = req.body;
+    const { name, organization, startDate, endDate, description, maxHoursGiven, interest, skills } =
+      req.body;
     const eventFound = await Event.findOne({ name });
     console.log("eventFound =>", eventFound);
     if (eventFound !== null) {
@@ -34,6 +28,7 @@ export const createEvent = async (req, res) => {
       const newEvent = {
         name,
         slug,
+        organization,
         startDate,
         endDate,
         description,
@@ -57,6 +52,7 @@ export const createEvent = async (req, res) => {
 export const getEvents = async (req, res) => {
   const events = await Event.find({});
   return res.json(events);
+  //return res.json(EventList);
 };
 
 // to retrieve event by
@@ -92,15 +88,7 @@ export const deleteEventBySlug = async (req, res) => {
 
 //to update an event by slug
 export const updateEvent = async (req, res) => {
-  const {
-    name,
-    startDate,
-    endDate,
-    description,
-    maxHoursGiven,
-    interest,
-    skills,
-  } = req.body;
+  const { name, startDate, endDate, description, maxHoursGiven, interest, skills } = req.body;
   const { slug } = req.params;
   try {
     // check if event exists
@@ -165,7 +153,7 @@ export const joinEvent = async (req, res) => {
       return res.status(400).send("Already joined");
     }
     event.volunteers.push(user.uid);
-    
+
     event.save();
 
     const userAttendance = await new EventAttendance({
@@ -185,7 +173,7 @@ export const markAttendance = async (req, res) => {
     console.log(req.params);
 
     const user = await User.findOne({ uid: req.user });
-    const event = await Event.findOne( { slug });
+    const event = await Event.findOne({ slug });
 
     if (event.token !== token) {
       return res.status(400).send("Wrong verification token");
@@ -205,4 +193,4 @@ export const markAttendance = async (req, res) => {
   } catch (err) {
     res.status(400).send("Mark Attendance failed => " + err);
   }
-}
+};

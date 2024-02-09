@@ -38,7 +38,7 @@ const userSchema = new Schema(
     emergencyContact: {
       type: String,
       required: true,
-    }
+    },
   },
   { timestamps: true }
 );

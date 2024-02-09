@@ -16,6 +16,10 @@ const eventSchema = new Schema(
       lowercase: true,
       unique: true,
     },
+    organization: {
+      type: String,
+      required: true,
+    },
     startDate: {
       type: Date,
     },
@@ -47,11 +51,11 @@ const eventSchema = new Schema(
   { timestamps: true }
 );
 
-const eventAttendanceSchema = new Schema( {
+const eventAttendanceSchema = new Schema({
   user: {
     type: String,
     required: true,
-  }, 
+  },
   event: {
     type: ObjectId,
     ref: "Event",
@@ -60,8 +64,8 @@ const eventAttendanceSchema = new Schema( {
   isAttend: {
     type: Boolean,
     default: false,
-  }
-})
+  },
+});
 
 export const Event = mongoose.model("Event", eventSchema);
 export const EventAttendance = mongoose.model("EventAttendance", eventAttendanceSchema);
