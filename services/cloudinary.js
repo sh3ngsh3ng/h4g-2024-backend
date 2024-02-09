@@ -33,7 +33,7 @@ export const uploadImage = async (image, name) => {
       folder: "testingVolunteerWave/images",
       resource_type: "image",
     });
-    console.log(output);
+    // console.log(output);
     return output;
   } catch (error) {
     console.log("error", error);
@@ -57,10 +57,10 @@ export const uploadPdf = async (image, name) => {
 
 // testUploadImage();
 
-async function testDeleteImage() {
+export const deleteImage = async (publicId) => {
   try {
-    await cloudinary.uploader.destroy("testingVolunteerWave/images/testingImage");
-    console.log("deleted image successfully");
+    const result = await cloudinary.uploader.destroy(publicId);
+    console.log("deleted image successfully: ", result);
   } catch (error) {
     console.log("error", error);
   }

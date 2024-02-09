@@ -3,22 +3,15 @@ import slugify from "slugify";
 import User, { SkillCert } from "../models/User";
 import EventList from "../events-db.json";
 import { generateQrCode } from "../services/qr";
+import { uploadImage, deleteImage } from "../services/cloudinary";
 import { generatorFromPdf } from "./pdf";
 
 //to create and add events
 export const createEvent = async (req, res) => {
-  console.log("req:", req);
+
   try {
-    const {
-      name,
-      startDate,
-      endDate,
-      description,
-      maxHoursGiven,
-      interest,
-      skills,
-      organization,
-    } = req.body.formToEdit;
+    const { name, startDate, endDate, description, maxHoursGiven, interest, skills, organization, images } =
+      req.body.formToEdit;
     const eventFound = await Event.findOne({ name });
     console.log("eventFound =>", eventFound);
     if (eventFound !== null) {
@@ -47,6 +40,7 @@ export const createEvent = async (req, res) => {
         skills,
         token,
         organization,
+        images
       };
 
       const createdEvent = await Event.create(newEvent);
@@ -130,9 +124,9 @@ export const updateEvent = async (req, res) => {
         const newSlug =
           updatedEvent.name != null
             ? slugify(updatedEvent.name, {
-                replacement: "-",
-                lower: true,
-              })
+              replacement: "-",
+              lower: true,
+            })
             : originalEvent.slug;
         updatedEvent.slug = newSlug;
         await Event.updateOne(
@@ -320,7 +314,7 @@ export const adminCompleteEvent = async (req, res) => {
     for (let i = 0; i < userList.length; i++) {
       let curr = userList[i];
       const cert = await generatorFromPdf(curr.name);
-      const user = await User.findOne( { uid: curr.user });
+      const user = await User.findOne({ uid: curr.user });
       user.volunteerCert.push(cert.secure_url);
       user.save();
     }
@@ -328,7 +322,7 @@ export const adminCompleteEvent = async (req, res) => {
     event.isCompleted = true;
     event.save();
 
-    return res.json({ success: true});
+    return res.json({ success: true });
   } catch (err) {
     return res.json("Create QR failed => " + err);
   }
