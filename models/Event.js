@@ -61,6 +61,21 @@ const eventAttendanceSchema = new Schema({
     ref: "Event",
     required: true,
   },
+  name: {
+    type: String,
+  },
+  email: {
+    type: String,
+  },
+  school: {
+    type: String,
+    default: "-",
+  },
+  age: {
+    type: Number,
+    max: 100,
+    min: 1,
+  },
   isAttend: {
     type: Boolean,
     default: false,
@@ -68,4 +83,7 @@ const eventAttendanceSchema = new Schema({
 });
 
 export const Event = mongoose.model("Event", eventSchema);
-export const EventAttendance = mongoose.model("EventAttendance", eventAttendanceSchema);
+export const EventAttendance = mongoose.model(
+  "EventAttendance",
+  eventAttendanceSchema
+);

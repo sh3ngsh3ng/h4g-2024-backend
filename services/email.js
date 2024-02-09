@@ -33,19 +33,24 @@ async function testEmail() {
 //testEmail();
 
 async function sendReminderEmail() {
-  let data = {
-    date: "01/12/2024",
-    greeting: "Hello",
-    name: "Volunteer!",
-  };
-  const templateSource = fs.readFileSync("./views/reminderEmail.hbs", "utf8");
-  const reminderEmail = hbs.compile(templateSource);
-  await transport.sendMail({
-    from: "VOLUNTEERWAVE@EMAIL.COM",
-    to: "USER@EMAIL.COM",
-    subject: "REMINDER EMAIL",
-    html: reminderEmail(data),
-  });
+  try {
+    let data = {
+      date: "01/12/2024",
+      greeting: "Hello",
+      name: "Volunteer!",
+    };
+    const templateSource = fs.readFileSync("./views/reminderEmail.hbs", "utf8");
+    const reminderEmail = hbs.compile(templateSource);
+    await transport.sendMail({
+      from: "VOLUNTEERWAVE@EMAIL.COM",
+      to: "USER@EMAIL.COM",
+      subject: "REMINDER EMAIL",
+      html: reminderEmail(data),
+    });
+  } catch (e) {
+    console.log("Reminder email send failed");
+  }
+  
 }
 
 //sendReminderEmail();

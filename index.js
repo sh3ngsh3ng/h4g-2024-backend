@@ -28,7 +28,7 @@ mongoose
 // route
 fs.readdirSync("./routes").map((r) => app.use("/api", require(`./routes/${r}`)));
 
-app.get("/test", authMiddleware, (req, res) => {
+app.get("/api/test", authMiddleware, (req, res) => {
   res.send("Hello world from node js");
 });
 
@@ -43,6 +43,22 @@ app.get("/test-email", (req, res) => {
 app.get("/test-cloudinary", (req, res) => {
   console.log("called");
   res.send("ok");
+});
+
+// for deployment
+const path = require("path");
+
+const _dirname = path.dirname("");
+const buildPath = path.join(_dirname, "/build");
+
+app.use(express.static(buildPath));
+
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "/build/index.html"), function (err) {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
 });
 
 const port = 8000;
