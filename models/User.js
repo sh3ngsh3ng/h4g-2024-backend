@@ -33,7 +33,7 @@ const userSchema = new Schema(
     skills: [{ type: String }],
     interest: [{ type: String }],
     volunteerCert: [{ type: String }],
-    skillCert: [{ type: ObjectId, ref: "SkillCert" }],
+    skillCert: [{ type: String }],
     phoneNumber: {
       type: String,
     },
