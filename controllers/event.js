@@ -4,7 +4,7 @@ import User from "../models/User";
 
 //to create and add events
 export const createEvent = async (req, res) => {
-  console.log("req:", req.body);
+  console.log("req:", req);
   try {
     const {
       name,
@@ -14,7 +14,8 @@ export const createEvent = async (req, res) => {
       maxHoursGiven,
       interest,
       skills,
-    } = req.body;
+      organization
+    } = req.body.formToEdit;
     const eventFound = await Event.findOne({ name });
     console.log("eventFound =>", eventFound);
     if (eventFound !== null) {
@@ -41,7 +42,9 @@ export const createEvent = async (req, res) => {
         interest,
         skills,
         token,
+        organization
       };
+
       const createdEvent = await Event.create(newEvent);
       console.log("created event ->", createdEvent);
       await createdEvent.save();
@@ -120,9 +123,9 @@ export const updateEvent = async (req, res) => {
         const newSlug =
           name != null
             ? slugify(name, {
-                replacement: "-",
-                lower: true,
-              })
+              replacement: "-",
+              lower: true,
+            })
             : originalEvent.slug;
         const updatedEvent = {
           name: name,
@@ -165,7 +168,7 @@ export const joinEvent = async (req, res) => {
       return res.status(400).send("Already joined");
     }
     event.volunteers.push(user.uid);
-    
+
     event.save();
 
     const userAttendance = await new EventAttendance({
@@ -185,7 +188,7 @@ export const markAttendance = async (req, res) => {
     console.log(req.params);
 
     const user = await User.findOne({ uid: req.user });
-    const event = await Event.findOne( { slug });
+    const event = await Event.findOne({ slug });
 
     if (event.token !== token) {
       return res.status(400).send("Wrong verification token");

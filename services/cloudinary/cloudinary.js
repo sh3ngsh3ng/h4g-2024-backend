@@ -23,7 +23,7 @@ async function testUploadImage() {
   }
 }
 
-testUploadImage();
+// testUploadImage();
 
 async function testDeleteImage() {
   try {
@@ -34,7 +34,7 @@ async function testDeleteImage() {
   }
 }
 
-testDeleteImage();
+// testDeleteImage();
 
 // can use eager to resize videos
 async function testUploadVideo() {
@@ -50,7 +50,7 @@ async function testUploadVideo() {
   }
 }
 
-testUploadVideo();
+// testUploadVideo();
 
 async function testDeleteVideo() {
   try {
@@ -63,4 +63,4 @@ async function testDeleteVideo() {
   }
 }
 
-testDeleteVideo();
+// testDeleteVideo();
