@@ -1,21 +1,15 @@
 import { Event, EventAttendance } from "../models/Event";
 import slugify from "slugify";
 import User from "../models/User";
+import EventList from "../events-db.json";
 import { generateQrCode } from "../services/qr";
 
 //to create and add events
 export const createEvent = async (req, res) => {
-  console.log("req:", req.body);
+  console.log("req:", req);
   try {
-    const {
-      name,
-      startDate,
-      endDate,
-      description,
-      maxHoursGiven,
-      interest,
-      skills,
-    } = req.body;
+    const { name, startDate, endDate, description, maxHoursGiven, interest, skills, organization } =
+      req.body.formToEdit;
     const eventFound = await Event.findOne({ name });
     console.log("eventFound =>", eventFound);
     if (eventFound !== null) {
@@ -35,6 +29,7 @@ export const createEvent = async (req, res) => {
       const newEvent = {
         name,
         slug,
+        organization,
         startDate,
         endDate,
         description,
@@ -42,7 +37,9 @@ export const createEvent = async (req, res) => {
         interest,
         skills,
         token,
+        organization,
       };
+
       const createdEvent = await Event.create(newEvent);
       console.log("created event ->", createdEvent);
       await createdEvent.save();
@@ -58,6 +55,7 @@ export const createEvent = async (req, res) => {
 export const getEvents = async (req, res) => {
   const events = await Event.find({});
   return res.json(events);
+  //return res.json(EventList);
 };
 
 // to retrieve event by
@@ -93,16 +91,8 @@ export const deleteEventBySlug = async (req, res) => {
 
 //to update an event by slug
 export const updateEvent = async (req, res) => {
-  const {
-    name,
-    startDate,
-    endDate,
-    description,
-    maxHoursGiven,
-    interest,
-    skills,
-  } = req.body;
-  const { slug } = req.params;
+  const updatedEvent = req.body.formToEdit
+  const slug = updatedEvent.slug
   try {
     // check if event exists
     const originalEvent = await Event.findOne({ slug });
@@ -110,40 +100,29 @@ export const updateEvent = async (req, res) => {
       return res.status(400).send("Event not found");
     } else {
       // check if name is already taken
-      const repeatedEvent = await Event.findOne({ name });
+      const repeatedEvent = await Event.findOne({ name: updatedEvent.name });
       if (repeatedEvent && repeatedEvent.name !== originalEvent.name) {
         return res.status(400).send("Event name is already used");
-      } else if (!name || !startDate || !maxHoursGiven) {
+      } else if (!updatedEvent.name || !updatedEvent.startDate || !updatedEvent.maxHoursGiven) {
         return res.status(400).send("Name, Start Date and Maximum Hours Given are required Fields");
-      } else if (startDate && endDate && startDate > endDate) {
+      } else if (updatedEvent.startDate && updatedEvent.endDate && updatedEvent.startDate > updatedEvent.endDate) {
         return res.status(400).send("Start date should be before End date");
       } else {
         const newSlug =
-          name != null
-            ? slugify(name, {
-                replacement: "-",
-                lower: true,
-              })
+          updatedEvent.name != null
+            ? slugify(updatedEvent.name, {
+              replacement: "-",
+              lower: true,
+            })
             : originalEvent.slug;
-        const updatedEvent = {
-          name: name,
-          slug: newSlug,
-          startDate: startDate,
-          endDate: endDate,
-          description: description,
-          maxHoursGiven: maxHoursGiven,
-          interest: interest,
-          skills: skills,
-        };
-        console.log(updatedEvent);
+        updatedEvent.slug = newSlug
         await Event.updateOne(
           {
             slug: originalEvent.slug,
           },
           updatedEvent
-        ).then(() => {
-          res.send({ message: "Event updated successfully" });
-        });
+        )
+        res.json({ message: "Event updated successfully", event: updatedEvent });
       }
     }
   } catch (err) {
@@ -166,7 +145,7 @@ export const joinEvent = async (req, res) => {
       return res.status(400).send("Already joined");
     }
     event.volunteers.push(user.uid);
-    
+
     event.save();
 
     const userAttendance = await new EventAttendance({
@@ -189,7 +168,7 @@ export const markAttendance = async (req, res) => {
     const { slug, token } = req.params;
 
     const user = await User.findOne({ uid: req.user });
-    const event = await Event.findOne( { slug });
+    const event = await Event.findOne({ slug });
 
     if (event.token !== token) {
       return res.status(400).send("Wrong verification token");
@@ -209,7 +188,7 @@ export const markAttendance = async (req, res) => {
   } catch (err) {
     res.status(400).send("Mark Attendance failed => " + err);
   }
-}
+};
 
 export const adminMarkAttendance = async (req, res) => {
   try {
@@ -217,7 +196,7 @@ export const adminMarkAttendance = async (req, res) => {
     const { uid } = req.body;
 
     const user = await User.findOne({ uid });
-    const event = await Event.findOne( { slug });
+    const event = await Event.findOne({ slug });
 
     const eventAttendance = await EventAttendance.findOne({ uid: user.uid, event });
 
@@ -233,7 +212,7 @@ export const adminMarkAttendance = async (req, res) => {
   } catch (err) {
     res.status(400).send("Mark Attendance failed => " + err);
   }
-}
+};
 
 export const adminUnmarkAttendance = async (req, res) => {
   try {
@@ -241,7 +220,7 @@ export const adminUnmarkAttendance = async (req, res) => {
     const { uid } = req.body;
 
     const user = await User.findOne({ uid });
-    const event = await Event.findOne( { slug });
+    const event = await Event.findOne({ slug });
 
     const eventAttendance = await EventAttendance.findOne({ uid: user.uid, event });
 
@@ -257,13 +236,13 @@ export const adminUnmarkAttendance = async (req, res) => {
   } catch (err) {
     res.status(400).send("Unmark Attendance failed => " + err);
   }
-}
+};
 
 export const listAttendance = async (req, res) => {
   try {
     const { slug } = req.params;
 
-    const event = await Event.findOne( { slug });
+    const event = await Event.findOne({ slug });
 
     const eventAttendance = await EventAttendance.find({ event });
 
@@ -273,25 +252,25 @@ export const listAttendance = async (req, res) => {
 
     console.log(eventAttendance);
 
-    return res.json({attendance: eventAttendance, slug: event.slug, eventName: event.name});
+    return res.json({ attendance: eventAttendance, slug: event.slug, eventName: event.name });
   } catch (err) {
     return res.json("List Attendance failed => " + err);
   }
-}
+};
 
 export const adminGenerateQr = async (req, res) => {
   try {
-    console.log("Hereh")
+    console.log("Hereh");
     const { slug } = req.params;
 
-    const event = await Event.findOne( { slug });
+    const event = await Event.findOne({ slug });
 
     const qr = await generateQrCode(slug, event.token);
 
     console.log(qr);
-    console.log("test");
-    return res.json({qr: qr})
+
+    return res.json({ qr: qr })
   } catch (err) {
-    return  res.json("Create QR failed => " + err);
+    return res.json("Create QR failed => " + err);
   }
-}
+};

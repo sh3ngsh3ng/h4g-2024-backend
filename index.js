@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 
 require("dotenv").config();
 require("./services/email");
-require("./services/cloudinary/cloudinary");
+require("./services/cloudinary");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
@@ -45,25 +45,21 @@ app.get("/test-cloudinary", (req, res) => {
   res.send("ok");
 });
 
-// for deployment 
+// for deployment
 const path = require("path");
 
-const _dirname = path.dirname("")
+const _dirname = path.dirname("");
 const buildPath = path.join(_dirname, "/build");
 
-app.use(express.static(buildPath))
+app.use(express.static(buildPath));
 
 app.get("/*", (req, res) => {
-  res.sendFile(
-		path.join(__dirname, "/build/index.html"),
-		function(err) {
-			if (err) {
-				res.status(500).send(err);
-			}
-		}
-	)
+  res.sendFile(path.join(__dirname, "/build/index.html"), function (err) {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
 });
-
 
 const port = 8000;
 app.listen(port, () => {
