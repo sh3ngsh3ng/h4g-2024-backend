@@ -37,3 +37,74 @@ export const login = (req, res) => {
     return res.status(401).send("User not found");
   }
 };
+
+export const getUserById = async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const user = await User.findOne({ uid });
+    console.log(user);
+    console.log(uid);
+    if (user) {
+      return res.json(user);
+    } else {
+      return res.status(404).send("User not found");
+    }
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+};
+
+export const updateUser = async (req, res) => {
+  const {
+    firstName,
+    lastName,
+    email,
+    age,
+    skills,
+    interest,
+    phoneNumber,
+    emergencyContact,
+    dateOfBirth,
+    gender,
+    occupation,
+    school,
+    canDrive,
+    ownVehicle,
+    immigrationStatus,
+  } = req.body;
+  const { uid } = req.params;
+  try {
+    const user = await User.findOne({ uid });
+    if (!user) {
+      return res.status(404).send("User not found");
+    } else {
+      var updatedUser = {};
+      updatedUser = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        age: age,
+        skills: skills,
+        interest: interest,
+        phoneNumber: phoneNumber,
+        emergencyContact: emergencyContact,
+        dateOfBirth: dateOfBirth,
+        gender: gender,
+        occupation: occupation,
+        school: school,
+        canDrive: canDrive,
+        ownVehicle: ownVehicle,
+        immigrationStatus: immigrationStatus,
+      };
+      await User.updateOne(
+        {
+          uid: uid,
+        },
+        updatedUser
+      );
+      res.json({ message: "User updated successfully", user: updatedUser });
+    }
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+};
