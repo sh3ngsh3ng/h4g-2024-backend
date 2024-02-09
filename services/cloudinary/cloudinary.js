@@ -37,7 +37,7 @@ export const uploadImage = async (image, name) => {
   }
 }
 
-testUploadImage();
+// testUploadImage();
 
 async function testDeleteImage() {
   try {
