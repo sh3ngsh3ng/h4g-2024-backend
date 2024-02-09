@@ -30,7 +30,7 @@ async function testEmail() {
 }
 
 // Call the testEmail function
-testEmail();
+//testEmail();
 
 async function sendReminderEmail() {
   try {
@@ -50,7 +50,5 @@ async function sendReminderEmail() {
   } catch (e) {
     console.log("Reminder email send failed");
   }
-  
 }
-
-// sendReminderEmail();
+//sendReminderEmail();

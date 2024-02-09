@@ -12,16 +12,19 @@ cloudinary.config({
 
 async function testUploadImage() {
   try {
-    await cloudinary.uploader.upload(testingImage, {
-      public_id: "testingImage",
+    const output = await cloudinary.uploader.upload(testingImage, {
+      public_id: "love",
       folder: "testingVolunteerWave/images",
       resource_type: "image",
     });
     console.log("uploaded image successfully");
+    console.log(output);
   } catch (error) {
     console.log("error", error);
   }
 }
+
+//testUploadImage();
 
 export const uploadImage = async (image, name) => {
   try {
@@ -35,7 +38,9 @@ export const uploadImage = async (image, name) => {
   } catch (error) {
     console.log("error", error);
   }
-}
+};
+
+uploadImage();
 
 // testUploadImage();
 
@@ -53,12 +58,13 @@ async function testDeleteImage() {
 // can use eager to resize videos
 async function testUploadVideo() {
   try {
-    await cloudinary.uploader.upload(testingVideo, {
+    const output = await cloudinary.uploader.upload(testingVideo, {
       public_id: "testingVideo",
       folder: "testingVolunteerWave/videos",
       resource_type: "video",
     });
     console.log("uploaded video successfully");
+    console.log(output);
   } catch (error) {
     console.log("error", error);
   }

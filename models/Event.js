@@ -16,6 +16,10 @@ const eventSchema = new Schema(
       lowercase: true,
       unique: true,
     },
+    organization: {
+      type: String,
+      required: true,
+    },
     startDate: {
       type: Date,
     },

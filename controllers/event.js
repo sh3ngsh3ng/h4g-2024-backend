@@ -1,22 +1,15 @@
 import { Event, EventAttendance } from "../models/Event";
 import slugify from "slugify";
 import User from "../models/User";
+import EventList from "../events-db.json";
 import { generateQrCode } from "../services/qr";
 
 //to create and add events
 export const createEvent = async (req, res) => {
   console.log("req:", req);
   try {
-    const {
-      name,
-      startDate,
-      endDate,
-      description,
-      maxHoursGiven,
-      interest,
-      skills,
-      organization
-    } = req.body.formToEdit;
+    const { name, startDate, endDate, description, maxHoursGiven, interest, skills, organization } =
+      req.body.formToEdit;
     const eventFound = await Event.findOne({ name });
     console.log("eventFound =>", eventFound);
     if (eventFound !== null) {
@@ -36,6 +29,7 @@ export const createEvent = async (req, res) => {
       const newEvent = {
         name,
         slug,
+        organization,
         startDate,
         endDate,
         description,
@@ -43,7 +37,7 @@ export const createEvent = async (req, res) => {
         interest,
         skills,
         token,
-        organization
+        organization,
       };
 
       const createdEvent = await Event.create(newEvent);
@@ -61,6 +55,7 @@ export const createEvent = async (req, res) => {
 export const getEvents = async (req, res) => {
   const events = await Event.find({});
   return res.json(events);
+  //return res.json(EventList);
 };
 
 // to retrieve event by
@@ -96,7 +91,6 @@ export const deleteEventBySlug = async (req, res) => {
 
 //to update an event by slug
 export const updateEvent = async (req, res) => {
-  console.log("req: ", req.body)
   const updatedEvent = req.body.formToEdit
   const slug = updatedEvent.slug
   try {
@@ -194,7 +188,7 @@ export const markAttendance = async (req, res) => {
   } catch (err) {
     res.status(400).send("Mark Attendance failed => " + err);
   }
-}
+};
 
 export const adminMarkAttendance = async (req, res) => {
   try {
@@ -218,7 +212,7 @@ export const adminMarkAttendance = async (req, res) => {
   } catch (err) {
     res.status(400).send("Mark Attendance failed => " + err);
   }
-}
+};
 
 export const adminUnmarkAttendance = async (req, res) => {
   try {
@@ -242,7 +236,7 @@ export const adminUnmarkAttendance = async (req, res) => {
   } catch (err) {
     res.status(400).send("Unmark Attendance failed => " + err);
   }
-}
+};
 
 export const listAttendance = async (req, res) => {
   try {
@@ -262,11 +256,11 @@ export const listAttendance = async (req, res) => {
   } catch (err) {
     return res.json("List Attendance failed => " + err);
   }
-}
+};
 
 export const adminGenerateQr = async (req, res) => {
   try {
-    console.log("Hereh")
+    console.log("Hereh");
     const { slug } = req.params;
 
     const event = await Event.findOne({ slug });
@@ -279,4 +273,4 @@ export const adminGenerateQr = async (req, res) => {
   } catch (err) {
     return res.json("Create QR failed => " + err);
   }
-}
+};
