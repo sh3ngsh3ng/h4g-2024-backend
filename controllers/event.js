@@ -8,8 +8,6 @@ import { generateQrCode } from "../services/qr";
 export const createEvent = async (req, res) => {
   console.log("req:", req);
   try {
-    const { name, organization, startDate, endDate, description, maxHoursGiven, interest, skills } =
-      req.body;
     const { name, startDate, endDate, description, maxHoursGiven, interest, skills, organization } =
       req.body.formToEdit;
     const eventFound = await Event.findOne({ name });
