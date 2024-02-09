@@ -42,6 +42,8 @@ export const uploadImage = async (image, name) => {
 
 uploadImage();
 
+// testUploadImage();
+
 async function testDeleteImage() {
   try {
     await cloudinary.uploader.destroy("testingVolunteerWave/images/testingImage");
@@ -51,7 +53,7 @@ async function testDeleteImage() {
   }
 }
 
-//testDeleteImage();
+// testDeleteImage();
 
 // can use eager to resize videos
 async function testUploadVideo() {
@@ -68,7 +70,7 @@ async function testUploadVideo() {
   }
 }
 
-//testUploadVideo();
+// testUploadVideo();
 
 async function testDeleteVideo() {
   try {
@@ -81,4 +83,4 @@ async function testDeleteVideo() {
   }
 }
 
-//testDeleteVideo();
+// testDeleteVideo();

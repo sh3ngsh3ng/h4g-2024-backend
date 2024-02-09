@@ -50,7 +50,5 @@ async function sendReminderEmail() {
   } catch (e) {
     console.log("Reminder email send failed");
   }
-  
 }
-
 //sendReminderEmail();

@@ -6,10 +6,12 @@ import { generateQrCode } from "../services/qr";
 
 //to create and add events
 export const createEvent = async (req, res) => {
-  console.log("req:", req.body);
+  console.log("req:", req);
   try {
     const { name, organization, startDate, endDate, description, maxHoursGiven, interest, skills } =
       req.body;
+    const { name, startDate, endDate, description, maxHoursGiven, interest, skills, organization } =
+      req.body.formToEdit;
     const eventFound = await Event.findOne({ name });
     console.log("eventFound =>", eventFound);
     if (eventFound !== null) {
@@ -37,7 +39,9 @@ export const createEvent = async (req, res) => {
         interest,
         skills,
         token,
+        organization,
       };
+
       const createdEvent = await Event.create(newEvent);
       console.log("created event ->", createdEvent);
       await createdEvent.save();
