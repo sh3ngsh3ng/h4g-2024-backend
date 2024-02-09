@@ -12,6 +12,16 @@ if (process.env.NODE_ENV === "LOCAL") {
   transport = nodemailer.createTransport(smtpConfig);
 } else {
   console.log("Starting in prd env");
+  transport = nodemailer.createTransport({
+    service: "Gmail",
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL_SMTP_USERNAME,
+      pass: process.env.EMAIL_SMTP_PASSWORD
+    }
+  })
 }
 
 async function testEmail() {
@@ -30,25 +40,31 @@ async function testEmail() {
 }
 
 // Call the testEmail function
-//testEmail();
+// testEmail();
 
-async function sendReminderEmail() {
+export async function sendCompletionEmail(name, userEmail, cert) {
+  console.log("sendCompletinoEmail called")
   try {
+    let subject = "Certificate of Participation with VolunteerWave"
     let data = {
-      date: "01/12/2024",
-      greeting: "Hello",
-      name: "Volunteer!",
+      name, cert, subject
     };
-    const templateSource = fs.readFileSync("./views/reminderEmail.hbs", "utf8");
-    const reminderEmail = hbs.compile(templateSource);
+    const templateSource = fs.readFileSync("./views/completionEmail.hbs", "utf8");
+    const completionEmail = hbs.compile(templateSource);
     await transport.sendMail({
-      from: "VOLUNTEERWAVE@EMAIL.COM",
-      to: "USER@EMAIL.COM",
-      subject: "REMINDER EMAIL",
-      html: reminderEmail(data),
+      from: process.env.USERNAME,
+      to: userEmail,
+      subject: "APPRECIATION EMAIL",
+      html: completionEmail(data),
+    }, (error, info) => {
+      if (error) {
+        console.error("Message coudl not be sent: ", error)
+      } else {
+        console.log("Message sent", info)
+      }
     });
   } catch (e) {
-    console.log("Reminder email send failed");
+    console.log("Completion email send failed: ", e);
   }
 }
-//sendReminderEmail();
+
