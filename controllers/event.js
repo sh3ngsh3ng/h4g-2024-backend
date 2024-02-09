@@ -338,3 +338,17 @@ export const viewCerts = async (req, res) => {
     return res.json("List certs failed => " + err);
   }
 };
+
+export const verifyCerts = async (req, res) => {
+  try {
+    const cert = await SkillCert.findOne({_id: req.body.certId});
+    console.log(cert);
+
+    cert.isVerified = true;
+    cert.save();
+
+    return res.json({ cert });
+  } catch (err) {
+    return res.json("Verify certs failed => " + err);
+  }
+};

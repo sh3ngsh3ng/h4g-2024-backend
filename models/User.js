@@ -77,11 +77,15 @@ const userSchema = new Schema(
 const skillCertSchema = new Schema({
   cert: {
     type: String,
+    unique: true,
   },
   isVerified: {
     type: Boolean,
     default: false,
   },
+  user: {
+    type: String,
+  }
 });
 
 export default mongoose.model("User", userSchema);
