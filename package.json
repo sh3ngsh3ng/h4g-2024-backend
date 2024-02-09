@@ -31,5 +31,8 @@
     "qr-image": "^3.2.0",
     "qrcode": "^1.5.3",
     "slugify": "^1.6.6"
+  },
+  "devDependencies": {
+    "pdf-to-png-converter": "^3.1.0"
   }
 }
