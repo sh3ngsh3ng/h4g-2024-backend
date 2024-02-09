@@ -8,10 +8,10 @@ import { generatorFromPdf } from "./pdf";
 
 //to create and add events
 export const createEvent = async (req, res) => {
-
+  console.log("req: ", req.body)
   try {
     const { name, startDate, endDate, description, maxHoursGiven, interest, skills, organization, images } =
-      req.body.formToEdit;
+      req.body;
     const eventFound = await Event.findOne({ name });
     console.log("eventFound =>", eventFound);
     if (eventFound !== null) {
@@ -94,7 +94,7 @@ export const deleteEventBySlug = async (req, res) => {
 
 //to update an event by slug
 export const updateEvent = async (req, res) => {
-  const updatedEvent = req.body.formToEdit;
+  const updatedEvent = req.body;
   const slug = updatedEvent.slug;
   try {
     // check if event exists

@@ -41,7 +41,7 @@ export const login = (req, res) => {
 
 export const getUserById = async (req, res) => {
   try {
-    const { uid } = req.user;
+    const uid = req.user;
     const user = await User.findOne({ uid });
     console.log(user);
     console.log(uid);
@@ -56,6 +56,7 @@ export const getUserById = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
+  // console.log("req: ", req.body)
   const {
     firstName,
     lastName,
@@ -72,8 +73,9 @@ export const updateUser = async (req, res) => {
     canDrive,
     ownVehicle,
     immigrationStatus,
+    skillCert
   } = req.body;
-  const { uid } = req.params;
+  const uid = req.user;
   try {
     const user = await User.findOne({ uid });
     if (!user) {
@@ -96,13 +98,16 @@ export const updateUser = async (req, res) => {
         canDrive: canDrive,
         ownVehicle: ownVehicle,
         immigrationStatus: immigrationStatus,
+        skillCert: skillCert
       };
-      await User.updateOne(
+      console.log("updated user: ", updatedUser)
+      const result = await User.updateOne(
         {
           uid: uid,
         },
         updatedUser
       );
+      console.log("result: ", result)
       res.json({ message: "User updated successfully", user: updatedUser });
     }
   } catch (err) {

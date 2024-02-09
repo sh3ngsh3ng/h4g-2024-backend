@@ -27,7 +27,6 @@ export const authMiddleware = async (req, res, next) => {
             .send({ message: "Account not found! Please sign up your accound." })
             .status(401);
         } else {
-          console.log("uid in middleware ", uid)
           req.user = uid;
           next();
         }
