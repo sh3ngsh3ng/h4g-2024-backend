@@ -3,12 +3,13 @@ import slugify from "slugify";
 import User from "../models/User";
 import EventList from "../events-db.json";
 import { generateQrCode } from "../services/qr";
+import { uploadImage, deleteImage } from "../services/cloudinary";
 
 //to create and add events
 export const createEvent = async (req, res) => {
-  console.log("req:", req);
+
   try {
-    const { name, startDate, endDate, description, maxHoursGiven, interest, skills, organization } =
+    const { name, startDate, endDate, description, maxHoursGiven, interest, skills, organization, images } =
       req.body.formToEdit;
     const eventFound = await Event.findOne({ name });
     console.log("eventFound =>", eventFound);
@@ -38,6 +39,7 @@ export const createEvent = async (req, res) => {
         skills,
         token,
         organization,
+        images
       };
 
       const createdEvent = await Event.create(newEvent);
