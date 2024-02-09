@@ -40,6 +40,19 @@ export const uploadImage = async (image, name) => {
   }
 };
 
+export const uploadPdf = async (image, name) => {
+  try {
+    const output = await cloudinary.uploader.upload(image, {
+      folder: "testingVolunteerWave/images",
+    });
+    console.log(output);
+    return output;
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+
 // uploadImage();
 
 // testUploadImage();

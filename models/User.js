@@ -32,6 +32,8 @@ const userSchema = new Schema(
     },
     skills: [{ type: String }],
     interest: [{ type: String }],
+    volunteerCert: [{ type: String }],
+    skillCert: [{ type: ObjectId, ref: "SkillCert" }],
     phoneNumber: {
       type: String,
     },
@@ -43,8 +45,44 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    dateOfBirth: {
+      type: Date,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female"],
+      required: true,
+    },
+    occupation: {
+      type: String,
+    },
+    school: {
+      type: String,
+    },
+    canDrive: {
+      type: Boolean,
+      default: false,
+    },
+    ownVehicle: {
+      type: Boolean,
+      default: false,
+    },
+    immigrationStatus: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
 
+const skillCertSchema = new Schema({
+  cert: {
+    type: String,
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 export default mongoose.model("User", userSchema);
+export const SkillCert = mongoose.model("SkillCert", skillCertSchema);

@@ -1,9 +1,10 @@
 import { Event, EventAttendance } from "../models/Event";
 import slugify from "slugify";
-import User from "../models/User";
+import User, { SkillCert } from "../models/User";
 import EventList from "../events-db.json";
 import { generateQrCode } from "../services/qr";
 import { uploadImage, deleteImage } from "../services/cloudinary";
+import { generatorFromPdf } from "./pdf";
 
 //to create and add events
 export const createEvent = async (req, res) => {
@@ -93,8 +94,8 @@ export const deleteEventBySlug = async (req, res) => {
 
 //to update an event by slug
 export const updateEvent = async (req, res) => {
-  const updatedEvent = req.body.formToEdit
-  const slug = updatedEvent.slug
+  const updatedEvent = req.body.formToEdit;
+  const slug = updatedEvent.slug;
   try {
     // check if event exists
     const originalEvent = await Event.findOne({ slug });
@@ -105,9 +106,19 @@ export const updateEvent = async (req, res) => {
       const repeatedEvent = await Event.findOne({ name: updatedEvent.name });
       if (repeatedEvent && repeatedEvent.name !== originalEvent.name) {
         return res.status(400).send("Event name is already used");
-      } else if (!updatedEvent.name || !updatedEvent.startDate || !updatedEvent.maxHoursGiven) {
-        return res.status(400).send("Name, Start Date and Maximum Hours Given are required Fields");
-      } else if (updatedEvent.startDate && updatedEvent.endDate && updatedEvent.startDate > updatedEvent.endDate) {
+      } else if (
+        !updatedEvent.name ||
+        !updatedEvent.startDate ||
+        !updatedEvent.maxHoursGiven
+      ) {
+        return res
+          .status(400)
+          .send("Name, Start Date and Maximum Hours Given are required Fields");
+      } else if (
+        updatedEvent.startDate &&
+        updatedEvent.endDate &&
+        updatedEvent.startDate > updatedEvent.endDate
+      ) {
         return res.status(400).send("Start date should be before End date");
       } else {
         const newSlug =
@@ -117,14 +128,17 @@ export const updateEvent = async (req, res) => {
               lower: true,
             })
             : originalEvent.slug;
-        updatedEvent.slug = newSlug
+        updatedEvent.slug = newSlug;
         await Event.updateOne(
           {
             slug: originalEvent.slug,
           },
           updatedEvent
-        )
-        res.json({ message: "Event updated successfully", event: updatedEvent });
+        );
+        res.json({
+          message: "Event updated successfully",
+          event: updatedEvent,
+        });
       }
     }
   } catch (err) {
@@ -176,7 +190,10 @@ export const markAttendance = async (req, res) => {
       return res.status(400).send("Wrong verification token");
     }
 
-    const eventAttendance = await EventAttendance.findOne({ uid: user.uid, event });
+    const eventAttendance = await EventAttendance.findOne({
+      uid: user.uid,
+      event,
+    });
 
     if (!eventAttendance) {
       return res.status(400).send("Find no user record in this event");
@@ -200,7 +217,10 @@ export const adminMarkAttendance = async (req, res) => {
     const user = await User.findOne({ uid });
     const event = await Event.findOne({ slug });
 
-    const eventAttendance = await EventAttendance.findOne({ uid: user.uid, event });
+    const eventAttendance = await EventAttendance.findOne({
+      uid: user.uid,
+      event,
+    });
 
     if (!eventAttendance) {
       return res.status(400).send("Find no user record in this event");
@@ -224,7 +244,10 @@ export const adminUnmarkAttendance = async (req, res) => {
     const user = await User.findOne({ uid });
     const event = await Event.findOne({ slug });
 
-    const eventAttendance = await EventAttendance.findOne({ uid: user.uid, event });
+    const eventAttendance = await EventAttendance.findOne({
+      uid: user.uid,
+      event,
+    });
 
     if (!eventAttendance) {
       return res.status(400).send("Find no user record in this event");
@@ -252,9 +275,11 @@ export const listAttendance = async (req, res) => {
       return res.status(400).send("Find no record for this event attendance");
     }
 
-    console.log(eventAttendance);
-
-    return res.json({ attendance: eventAttendance, slug: event.slug, eventName: event.name });
+    return res.json({
+      attendance: eventAttendance,
+      slug: event.slug,
+      eventName: event.name,
+    });
   } catch (err) {
     return res.json("List Attendance failed => " + err);
   }
@@ -262,17 +287,54 @@ export const listAttendance = async (req, res) => {
 
 export const adminGenerateQr = async (req, res) => {
   try {
-    console.log("Hereh");
     const { slug } = req.params;
 
     const event = await Event.findOne({ slug });
 
     const qr = await generateQrCode(slug, event.token);
 
-    console.log(qr);
-
-    return res.json({ qr: qr })
+    return res.json({ qr: qr });
   } catch (err) {
     return res.json("Create QR failed => " + err);
+  }
+};
+
+export const adminCompleteEvent = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    const event = await Event.findOne({ slug });
+
+    if (event.isCompleted) {
+      return res.status(400).send("Certificate has been issued!");
+    }
+
+    const userList = await EventAttendance.find({ event });
+
+    for (let i = 0; i < userList.length; i++) {
+      let curr = userList[i];
+      const cert = await generatorFromPdf(curr.name);
+      const user = await User.findOne({ uid: curr.user });
+      user.volunteerCert.push(cert.secure_url);
+      user.save();
+    }
+
+    event.isCompleted = true;
+    event.save();
+
+    return res.json({ success: true });
+  } catch (err) {
+    return res.json("Create QR failed => " + err);
+  }
+};
+
+export const viewCerts = async (req, res) => {
+  try {
+    const certs = await SkillCert.find();
+
+    console.log(certs);
+    return res.json({ certs });
+  } catch (err) {
+    return res.json("List certs failed => " + err);
   }
 };
