@@ -31,6 +31,7 @@ export const login = (req, res) => {
   try {
     // return res.json({sucess: true});
     if (req.user) {
+      console.log(req.user)
       return res.json({ sucess: true });
     }
   } catch {
@@ -40,7 +41,7 @@ export const login = (req, res) => {
 
 export const getUserById = async (req, res) => {
   try {
-    const { uid } = req.params;
+    const { uid } = req.user;
     const user = await User.findOne({ uid });
     console.log(user);
     console.log(uid);
