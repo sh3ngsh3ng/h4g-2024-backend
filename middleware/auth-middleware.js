@@ -9,11 +9,11 @@ export const authMiddleware = async (req, res, next) => {
       // return res.send({ message: "No token provided" }).status(401);
       return res.redirect("http://localhost:3000/signup");
     }
-  
+
     if (headerToken && headerToken.split(" ")[0] !== "Bearer") {
       return res.send({ message: "Invalid token" }).status(401);
     }
-  
+
     const token = headerToken.split(" ")[1];
 
     await adminApp
@@ -27,6 +27,7 @@ export const authMiddleware = async (req, res, next) => {
             .send({ message: "Account not found! Please sign up your accound." })
             .status(401);
         } else {
+          console.log("uid in middleware ", uid)
           req.user = uid;
           next();
         }
@@ -44,11 +45,11 @@ export const isAdminMiddleware = async (req, res, next) => {
       // return res.send({ message: "No token provided" }).status(401);
       return res.redirect("http://localhost:3000/signup");
     }
-  
+
     if (headerToken && headerToken.split(" ")[0] !== "Bearer") {
       return res.send({ message: "Invalid token" }).status(401);
     }
-  
+
     const token = headerToken.split(" ")[1];
 
     await adminApp
@@ -64,8 +65,8 @@ export const isAdminMiddleware = async (req, res, next) => {
         } else {
           if (!user.isAdmin) {
             return res
-            .json({ message: "You are not authorized for this action." })
-            .status(401);
+              .json({ message: "You are not authorized for this action." })
+              .status(401);
           }
           req.user = uid;
           next()
@@ -82,11 +83,11 @@ export const registerMiddleware = (req, res, next) => {
     if (!headerToken) {
       return res.send({ message: "No token provided" }).status(401);
     }
-  
+
     if (headerToken && headerToken.split(" ")[0] !== "Bearer") {
       res.send({ message: "Invalid token" }).status(401);
     }
-  
+
     const token = headerToken.split(" ")[1];
     adminApp
       .auth()
