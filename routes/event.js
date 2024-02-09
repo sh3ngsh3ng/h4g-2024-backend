@@ -12,6 +12,8 @@ import {
   adminUnmarkAttendance,
   adminGenerateQr,
   adminCompleteEvent,
+  viewCerts,
+  verifyCerts,
 } from "../controllers/event";
 import { authMiddleware, isAdminMiddleware } from "../middleware/auth-middleware";
 
@@ -30,5 +32,7 @@ router.post("/event/:slug/listAttendance/mark", isAdminMiddleware, adminMarkAtte
 router.post("/event/:slug/listAttendance/unmark", isAdminMiddleware, adminUnmarkAttendance)
 router.get("/event/:slug/listAttendance/generate", isAdminMiddleware, adminGenerateQr)
 router.get("/event/:slug/listAttendance/complete", isAdminMiddleware, adminCompleteEvent)
+router.get("/certs", isAdminMiddleware, viewCerts)
+router.post("/certs/verify", isAdminMiddleware, verifyCerts)
 
 module.exports = router;

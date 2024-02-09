@@ -1,4 +1,4 @@
-import User from "../models/User";
+import User, { SkillCert } from "../models/User";
 
 export const register = async (req, res) => {
   try {
@@ -43,10 +43,11 @@ export const getUserById = async (req, res) => {
   try {
     const uid = req.user;
     const user = await User.findOne({ uid });
+    const certs = await SkillCert.find({user: user.uid});
     console.log(user);
     console.log(uid);
     if (user) {
-      return res.json(user);
+      return res.json({user, certs});
     } else {
       return res.status(404).send("User not found");
     }
@@ -100,6 +101,16 @@ export const updateUser = async (req, res) => {
         immigrationStatus: immigrationStatus,
         skillCert: skillCert
       };
+
+      for (let i = 0; i < skillCert.length; i++) {
+        const temp = await SkillCert.findOne({ cert: skillCert[i]})
+
+        if (!temp) {
+          const newCert = new SkillCert({cert: skillCert[i], user: user.uid});
+          newCert.save();
+        }
+      }
+
       console.log("updated user: ", updatedUser)
       const result = await User.updateOne(
         {
