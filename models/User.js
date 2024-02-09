@@ -43,6 +43,31 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    dateOfBirth: {
+      type: Date,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female"],
+      required: true,
+    },
+    occupation: {
+      type: String,
+    },
+    school: {
+      type: String,
+    },
+    canDrive: {
+      type: Boolean,
+      default: false,
+    },
+    ownVehicle: {
+      type: Boolean,
+      default: false,
+    },
+    immigrationStatus: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
