@@ -289,7 +289,7 @@ export const adminGenerateQr = async (req, res) => {
     const qr = await generateQrCode(slug, event.token);
 
     console.log(qr);
-
+    console.log("test");
     return res.json({qr: qr})
   } catch (err) {
     return  res.json("Create QR failed => " + err);
