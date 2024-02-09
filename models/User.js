@@ -32,6 +32,8 @@ const userSchema = new Schema(
     },
     skills: [{ type: String }],
     interest: [{ type: String }],
+    volunteerCert: [{ type: String }],
+    skillCert: [{ type: ObjectId, ref: "SkillCert" }],
     phoneNumber: {
       type: String,
     },
@@ -72,4 +74,15 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
+const skillCertSchema = new Schema({
+  cert: {
+    type: String,
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 export default mongoose.model("User", userSchema);
+export const SkillCert = mongoose.model("SkillCert", skillCertSchema);
