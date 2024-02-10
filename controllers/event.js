@@ -9,10 +9,19 @@ import { sendCompletionEmail } from "../services/email";
 
 //to create and add events
 export const createEvent = async (req, res) => {
-  console.log("req: ", req.body)
+  console.log("req: ", req.body);
   try {
-    const { name, startDate, endDate, description, maxHoursGiven, interest, skills, organization, images } =
-      req.body;
+    const {
+      name,
+      startDate,
+      endDate,
+      description,
+      maxHoursGiven,
+      interest,
+      skills,
+      organization,
+      images,
+    } = req.body;
     const eventFound = await Event.findOne({ name });
     console.log("eventFound =>", eventFound);
     if (eventFound !== null) {
@@ -41,7 +50,7 @@ export const createEvent = async (req, res) => {
         skills,
         token,
         organization,
-        images
+        images,
       };
 
       const createdEvent = await Event.create(newEvent);
@@ -125,9 +134,9 @@ export const updateEvent = async (req, res) => {
         const newSlug =
           updatedEvent.name != null
             ? slugify(updatedEvent.name, {
-              replacement: "-",
-              lower: true,
-            })
+                replacement: "-",
+                lower: true,
+              })
             : originalEvent.slug;
         updatedEvent.slug = newSlug;
         await Event.updateOne(
@@ -218,8 +227,10 @@ export const adminMarkAttendance = async (req, res) => {
     const user = await User.findOne({ uid });
     const event = await Event.findOne({ slug });
 
+    console.log(user);
+
     const eventAttendance = await EventAttendance.findOne({
-      uid: user.uid,
+      user: user.uid,
       event,
     });
 
@@ -230,6 +241,8 @@ export const adminMarkAttendance = async (req, res) => {
     eventAttendance.isAttend = true;
 
     eventAttendance.save();
+
+    console.log(eventAttendance);
 
     return res.json({ success: true });
   } catch (err) {
@@ -246,7 +259,7 @@ export const adminUnmarkAttendance = async (req, res) => {
     const event = await Event.findOne({ slug });
 
     const eventAttendance = await EventAttendance.findOne({
-      uid: user.uid,
+      user: user.uid,
       event,
     });
 
@@ -276,6 +289,8 @@ export const listAttendance = async (req, res) => {
       return res.status(400).send("Find no record for this event attendance");
     }
 
+    console.log(eventAttendance);
+
     return res.json({
       attendance: eventAttendance,
       slug: event.slug,
@@ -301,7 +316,7 @@ export const adminGenerateQr = async (req, res) => {
 };
 
 export const adminCompleteEvent = async (req, res) => {
-  console.log("adminCompleteEvent route called")
+  console.log("adminCompleteEvent route called");
   try {
     const { slug } = req.params;
 
@@ -315,15 +330,17 @@ export const adminCompleteEvent = async (req, res) => {
 
     for (let i = 0; i < userList.length; i++) {
       let curr = userList[i];
-      const cert = await generatorFromPdf(curr.name);
-      const certUrl = cert.secure_url
-      const user = await User.findOne({ uid: curr.user });
-      user.volunteerCert.push(certUrl);
-      user.save();
+      if (curr.isAttend) {
+        const cert = await generatorFromPdf(curr.name);
+        const certUrl = cert.secure_url;
+        const user = await User.findOne({ uid: curr.user });
+        user.volunteerCert.push(certUrl);
+        user.save();
 
-      const userEmail = user.email
-      const userName = user.name
-      sendCompletionEmail(userName, userEmail, certUrl)
+        const userEmail = user.email;
+        const userName = user.name;
+        sendCompletionEmail(userName, userEmail, certUrl);
+      }
     }
 
     event.isCompleted = true;
@@ -348,7 +365,7 @@ export const viewCerts = async (req, res) => {
 
 export const verifyCerts = async (req, res) => {
   try {
-    const cert = await SkillCert.findOne({_id: req.body.certId});
+    const cert = await SkillCert.findOne({ _id: req.body.certId });
     console.log(cert);
 
     cert.isVerified = true;
