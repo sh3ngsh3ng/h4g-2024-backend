@@ -4,7 +4,9 @@ const fs = require("fs");
 
 export const generateQrCode = async (slug, token) => {
   try {
-    const url = `http://localhost:3000/signup?event=${slug}&token=${token}`;
+    const domain = "https://volunteerwave.cg-test.co/"
+    const localhost = "http://localhost:3000/"
+    const url = `${localhost}signup?event=${slug}&token=${token}`;
 
     // generate qrcode
     const qr_png = qr.image(url, { type: "png" });
