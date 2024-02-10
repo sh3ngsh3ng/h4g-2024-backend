@@ -5,6 +5,7 @@ import EventList from "../events-db.json";
 import { generateQrCode } from "../services/qr";
 import { uploadImage, deleteImage } from "../services/cloudinary";
 import { generatorFromPdf } from "./pdf";
+import { sendCompletionEmail } from "../services/email";
 
 //to create and add events
 export const createEvent = async (req, res) => {
@@ -300,6 +301,7 @@ export const adminGenerateQr = async (req, res) => {
 };
 
 export const adminCompleteEvent = async (req, res) => {
+  console.log("adminCompleteEvent route called")
   try {
     const { slug } = req.params;
 
@@ -314,9 +316,14 @@ export const adminCompleteEvent = async (req, res) => {
     for (let i = 0; i < userList.length; i++) {
       let curr = userList[i];
       const cert = await generatorFromPdf(curr.name);
+      const certUrl = cert.secure_url
       const user = await User.findOne({ uid: curr.user });
-      user.volunteerCert.push(cert.secure_url);
+      user.volunteerCert.push(certUrl);
       user.save();
+
+      const userEmail = user.email
+      const userName = user.name
+      sendCompletionEmail(userName, userEmail, certUrl)
     }
 
     event.isCompleted = true;
