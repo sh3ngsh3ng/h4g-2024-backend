@@ -99,14 +99,14 @@ export const updateUser = async (req, res) => {
         canDrive: canDrive,
         ownVehicle: ownVehicle,
         immigrationStatus: immigrationStatus,
-        skillCert: skillCert
+        skillCert: skillCert.filter(cert => {cert.cert})
       };
 
       for (let i = 0; i < skillCert.length; i++) {
-        const temp = await SkillCert.findOne({ cert: skillCert[i]})
+        const temp = await SkillCert.findOne({ cert: skillCert[i].cert})
 
         if (!temp) {
-          const newCert = new SkillCert({cert: skillCert[i], user: user.uid});
+          const newCert = new SkillCert({cert: skillCert[i].cert, user: user.uid});
           newCert.save();
         }
       }
