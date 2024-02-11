@@ -63,7 +63,7 @@ export const generatorFromPdf = async (user) => {
     // save the pdf document
     fs.writeFileSync("./output.pdf", pdfBytes);
 
-    const output = await uploadPdf("output.png", "Testing");
+    const output = await uploadPdf("output.pdf", "Testing");
 
     return output;
   } catch (err) {
